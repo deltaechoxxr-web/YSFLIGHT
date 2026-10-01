@@ -426,6 +426,8 @@ void FsInstrumentIndication::CleanUp(void)
 	hasSpoiler=YSFALSE;
 	spoiler=0.0;
 	autoPilot=YSFALSE;
+	ecmState=0;
+	ecmPower=0.0;
 
 	elevator=0.0;
 	elevatorTrim=0.0;
@@ -439,7 +441,7 @@ YSSIZE_T FsInstrumentIndication::NetworkEncode(unsigned char buf[],YSSIZE_T bufS
 {
 	unsigned char *ptr=buf;
 	FsPushInt(ptr,FSEXCCMD_INSTRUMENT_INDICATION);
-	FsPushShort(ptr,0);  // Version
+	FsPushShort(ptr,1);  // Version
 	FsPushShort(ptr,(short)headingBugSelected);
 	FsPushFloat(ptr,(float)heading);
 	FsPushFloat(ptr,(float)headingBug);
@@ -494,6 +496,8 @@ YSSIZE_T FsInstrumentIndication::NetworkEncode(unsigned char buf[],YSSIZE_T bufS
 	FsPushFloat(ptr,(float)velocity.x());
 	FsPushFloat(ptr,(float)velocity.y());
 	FsPushFloat(ptr,(float)velocity.z());
+	FsPushInt(ptr,ecmState);
+	FsPushFloat(ptr,(float)ecmPower);
 
 	const YSSIZE_T codeSize=ptr-buf;
 	if(bufSize<codeSize)
@@ -566,7 +570,13 @@ YSRESULT FsInstrumentIndication::NetworkDecode(const unsigned char buf[],YSSIZE_
 	velocity.SetX(FsPopFloat(ptr));
 	velocity.SetY(FsPopFloat(ptr));
 	velocity.SetZ(FsPopFloat(ptr));
-	// << Version 0
+	ecmState=0;
+	ecmPower=0.0;
+	if(0<version && (ptr-buf)+8<=codeSize)
+	{
+		ecmState=FsPopInt(ptr);
+		ecmPower=FsPopFloat(ptr);
+	}
 
 	return YSOK;
 }

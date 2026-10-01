@@ -1062,6 +1062,28 @@ void FsWeapon::Move(const double &dt,const double &cTime,const FsWeather &weathe
 
 YSBOOL FsWeapon::IsOwnerStillHaveTarget(void)
 {
+	if(NULL!=target && FSEX_AIRPLANE==target->GetType())
+	{
+		const FsAirplane *targetAir=(const FsAirplane *)target;
+		if(YSTRUE==targetAir->Prop().IsEcmActive())
+		{
+			const double ecmPower=targetAir->Prop().GetEcmPower();
+			if(0.85<ecmPower)
+			{
+				target=NULL;
+				return YSFALSE;
+			}
+			else if(0.35<=ecmPower)
+			{
+				if(YsRandom()<ecmPower)
+				{
+					target=NULL;
+					return YSFALSE;
+				}
+			}
+		}
+	}
+
 	YSHASHKEY ownerAirTargetKey=YSNULLHASHKEY;
 	if(NULL!=firedBy)
 	{
