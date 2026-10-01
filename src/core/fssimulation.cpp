@@ -5994,6 +5994,8 @@ void FsSimulation::SimMakeUpCockpitIndicationSet(class FsCockpitIndicationSet &c
 
 		cockpitIndicationSet.inst.mach=playerPlane->Prop().GetMach();
 		cockpitIndicationSet.inst.gForce=playerPlane->Prop().GetG();
+		cockpitIndicationSet.inst.ecmState=(YSTRUE==playerPlane->Prop().IsEcmActive() ? 1 : 0);
+		cockpitIndicationSet.inst.ecmPower=playerPlane->Prop().GetEcmPower();
 		cockpitIndicationSet.inst.hasVectorThrust=playerPlane->Prop().GetHasThrustVectoring();
 		playerPlane->Prop().GetThrustDirection(cockpitIndicationSet.inst.nozzleDirection);
 		cockpitIndicationSet.inst.hasRetractableGear=playerPlane->Prop().HasRetractableLandingGear();
@@ -13871,4 +13873,3 @@ void FsSimulation::CloseChatDialog(void)
 		FsDisableIME();
 	}
 }
-

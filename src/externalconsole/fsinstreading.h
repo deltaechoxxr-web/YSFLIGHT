@@ -196,6 +196,8 @@ public:
 	YSBOOL hasSpoiler;
 	double spoiler;
 	YSBOOL autoPilot;
+	int ecmState;
+	double ecmPower;
 
 	double elevator,elevatorTrim,aileron,rudder;
 

@@ -138,6 +138,8 @@ void FsAirplaneProperty::InitializeState(void)
 	staNavLight=YSTRUE;
 	staStrobe=YSTRUE;
 	staLandingLight=YSTRUE;
+	staEcmActive=YSFALSE;
+	staEcmEnergy=120.0;
 
 	staPayload=0.0;
 	staFuelLoad=0.0;
@@ -466,6 +468,12 @@ void FsAirplaneProperty::Initialize(void)
 	chHasBombingRadar=YSTRUE;
 	chHasGroundRadar=YSTRUE;
 	chHasAirRadar=YSTRUE;
+	chHasEcm=YSTRUE;
+	chEcmMaxEnergy=120.0;
+	chEcmDrainRate=8.0;
+	chEcmRechargeRate=12.0;
+	chEcmPower=0.9;
+	staEcmEnergy=chEcmMaxEnergy;
 
 
 
@@ -839,6 +847,7 @@ void FsAirplaneProperty::Move(
 	int i;
 
 	BeforeMove();
+	UpdateEcm(dt);
 
 #ifdef CRASHINVESTIGATION_MOVE
 	printf("M1 %d\n",GetState());
@@ -6559,6 +6568,72 @@ YSRESULT FsAirplaneProperty::ToggleLandingLight(void)
 	return YSOK;
 }
 
+YSRESULT FsAirplaneProperty::ToggleEcm(void)
+{
+	if(YSTRUE!=chHasEcm)
+	{
+		return YSERR;
+	}
+
+	if(YSTRUE==staEcmActive)
+	{
+		staEcmActive=YSFALSE;
+		return YSOK;
+	}
+
+	if(staEcmEnergy<=0.0 || chEcmMaxEnergy<=0.0)
+	{
+		return YSERR;
+	}
+
+	staEcmActive=YSTRUE;
+	return YSOK;
+}
+
+YSBOOL FsAirplaneProperty::IsEcmActive(void) const
+{
+	return (YSTRUE==chHasEcm && YSTRUE==staEcmActive && 0.0<chEcmMaxEnergy && staEcmEnergy>0.0 ? YSTRUE : YSFALSE);
+}
+
+double FsAirplaneProperty::GetEcmPower(void) const
+{
+	if(YSTRUE!=IsEcmActive() || chEcmMaxEnergy<=0.0)
+	{
+		return 0.0;
+	}
+
+	return YsBound(chEcmPower*staEcmEnergy/chEcmMaxEnergy,0.0,1.0);
+}
+
+void FsAirplaneProperty::UpdateEcm(const double &dt)
+{
+	if(YSTRUE!=chHasEcm || chEcmMaxEnergy<=0.0)
+	{
+		staEcmActive=YSFALSE;
+		staEcmEnergy=0.0;
+		return;
+	}
+
+	if(dt<=0.0)
+	{
+		return;
+	}
+
+	if(YSTRUE==staEcmActive)
+	{
+		staEcmEnergy-=chEcmDrainRate*dt;
+		if(staEcmEnergy<=0.0)
+		{
+			staEcmEnergy=0.0;
+			staEcmActive=YSFALSE;
+		}
+	}
+	else
+	{
+		staEcmEnergy=YsSmaller(chEcmMaxEnergy,staEcmEnergy+chEcmRechargeRate*dt);
+	}
+}
+
 int FsAirplaneProperty::LoadWeaponToSlot(FSWEAPONTYPE wpnType,int n)
 {
 	if(FSWEAPON_FLARE_INTERNAL==wpnType)
@@ -10455,4 +10530,3 @@ const char *FsGetAirplaneCategoryString(FSAIRPLANECATEGORY cat)
 		return "";
 	}
 }
-

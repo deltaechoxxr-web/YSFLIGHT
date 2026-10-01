@@ -134,6 +134,8 @@ protected:
 	YSBOOL staNavLight;
 	YSBOOL staStrobe;
 	YSBOOL staLandingLight;
+	YSBOOL staEcmActive;
+	double staEcmEnergy;
 
 	double staPayload;       //Payload(*)
 	double staFuelLoad;      //Fuel Remains(*)
@@ -470,6 +472,11 @@ protected:
 	YSBOOL chHasBombingRadar;
 	YSBOOL chHasGroundRadar;
 	YSBOOL chHasAirRadar;
+	YSBOOL chHasEcm;
+	double chEcmMaxEnergy;
+	double chEcmDrainRate;
+	double chEcmRechargeRate;
+	double chEcmPower;
 
 
 	//Reference Vars
@@ -584,6 +591,10 @@ public:
 	YSRESULT ToggleBeacon(void);
 	YSRESULT ToggleStrobe(void);
 	YSRESULT ToggleLandingLight(void);
+	YSRESULT ToggleEcm(void);
+	YSBOOL IsEcmActive(void) const;
+	double GetEcmPower(void) const;
+	void UpdateEcm(const double &dt);
 
 
 	int LoadWeaponToSlot(FSWEAPONTYPE wpnType,int n); // Returns number of weapons actually loaded
