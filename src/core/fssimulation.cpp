@@ -6004,6 +6004,9 @@ void FsSimulation::SimMakeUpCockpitIndicationSet(class FsCockpitIndicationSet &c
 		cockpitIndicationSet.inst.spoiler=playerPlane->Prop().GetSpoiler();
 		cockpitIndicationSet.inst.autoPilot=(NULL!=playerPlane->GetAutopilot() ? YSTRUE : YSFALSE);
 
+		cockpitIndicationSet.inst.ecmState=(YSTRUE==playerPlane->Prop().IsEcmActive() ? 1 : 0);
+		cockpitIndicationSet.inst.ecmPower=playerPlane->Prop().GetEcmPower();
+
 		cockpitIndicationSet.inst.elevator=playerPlane->Prop().GetElevator();
 		cockpitIndicationSet.inst.elevatorTrim=playerPlane->Prop().GetElvTrim();
 		cockpitIndicationSet.inst.aileron=playerPlane->Prop().GetAileron();
@@ -7791,6 +7794,57 @@ void FsSimulation::SimDrawForeground(const ActualViewMode &actualViewMode,const 
 		if(YSTRUE==FsIsMainWindowActive() && NeedToDrawInstrument(actualViewMode)==YSTRUE)
 		{
 			SimDrawRadar(actualViewMode);
+		}
+	}
+
+#ifdef CRASHINVESTIGATION_SIMDRAWFOREGROUND
+	printf("SimDrawForeground-9-1\n");
+#endif
+
+	if(NULL!=playerPlane && YSTRUE==FsIsMainWindowActive() && NeedToDrawInstrument(actualViewMode)==YSTRUE &&
+	   YSTRUE==playerPlane->Prop().GetHasEcm())
+	{
+		int wid,hei;
+		FsGetWindowSize(wid,hei);
+
+		const int radarSize=wid/5;
+		const int sx=wid-radarSize-10;
+		const int sy=10+radarSize+16;
+
+		if(0!=cockpitIndicationSet.inst.ecmState)
+		{
+			const double energyRatio=playerPlane->Prop().GetEcmEnergyRatio();
+
+			char bar[12];
+			const int nFilled=(int)(energyRatio*10.0+0.5);
+			for(int i=0; i<10; ++i)
+			{
+				bar[i]=(i<nFilled ? '#' : '.');
+			}
+			bar[10]=0;
+
+			YsString msg;
+			msg.Printf("ECM: ON [%s] %d%%",bar,(int)(energyRatio*100.0+0.5));
+
+			YsColor col;
+			if(energyRatio<=0.0)
+			{
+				col=YsRed();
+			}
+			else if(energyRatio<0.5)
+			{
+				col=YsYellow();
+			}
+			else
+			{
+				col=YsGreen();
+			}
+
+			FsDrawString(sx,sy,msg,col);
+		}
+		else
+		{
+			FsDrawString(sx,sy,"ECM: OFF",YsWhite());
 		}
 	}
 

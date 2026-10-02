@@ -451,6 +451,12 @@ YSRESULT FsFlightControl::ProcessButtonFunction(const double &/*cTime*/,FsExiste
 			air->Prop().ToggleLandingLight();
 		}
 		break;
+	case FSBTF_TOGGLEECM:                 // Toggle ECM (Electronic Countermeasures)
+		if(NULL!=air)
+		{
+			air->Prop().ToggleEcm();
+		}
+		break;
 
 
 	// The following keys are implemented through virtual buttons of FsAirplaneProperty
@@ -1343,7 +1349,9 @@ static struct FsButtonFunctionString fsButtonFuncStr[]=
 	{FSBTF_SENSITIVITYUP,        "SENSITIVITYUP",        "Increase Sensitivity"},
 	{FSBTF_SENSITIVITYDOWN,      "SENSITIVITYDOWN",      "Decrease Sensitivity"},
 
-	{FSBTF_SWITCHVIEWTARGET,     "SWITCHVIEWTARGET",     "Switch View Target"}
+	{FSBTF_SWITCHVIEWTARGET,     "SWITCHVIEWTARGET",     "Switch View Target"},
+
+	{FSBTF_TOGGLEECM,            "TOGGLEECM",            "Turn On/Off ECM (Electronic Countermeasures)"}
 };
 
 static struct FsKeyString fsKeyString[]=
@@ -1771,6 +1779,7 @@ void FsControlAssignment::SetDefaultKeyAssign(void)
 	AddKeyAssignment(FSKEY_WHEELUP, FSBTF_VIEWZOOM);
 	AddKeyAssignment(FSKEY_WHEELDOWN,FSBTF_VIEWMOOZ);
 	AddKeyAssignment(FSKEY_HOME,    FSBTF_SUPPLYDIALOG);
+	AddKeyAssignment(FSKEY_E,       FSBTF_TOGGLEECM);  // Toggle ECM (Electronic Countermeasures)
 }
 
 void FsControlAssignment::BuildMapping(void)

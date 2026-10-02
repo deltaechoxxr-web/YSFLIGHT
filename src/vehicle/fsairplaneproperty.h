@@ -596,7 +596,9 @@ public:
 
 	YSRESULT ToggleEcm(void);
 	YSBOOL IsEcmActive(void) const;
+	YSBOOL GetHasEcm(void) const;
 	double GetEcmPower(void) const;
+	double GetEcmEnergyRatio(void) const;
 	void UpdateEcm(const double &dt);
 
 

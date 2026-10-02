@@ -427,6 +427,9 @@ void FsInstrumentIndication::CleanUp(void)
 	spoiler=0.0;
 	autoPilot=YSFALSE;
 
+	ecmState=0;
+	ecmPower=0.0;
+
 	elevator=0.0;
 	elevatorTrim=0.0;
 	aileron=0.0;
