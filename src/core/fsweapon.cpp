@@ -1077,6 +1077,27 @@ YSBOOL FsWeapon::IsOwnerStillHaveTarget(void)
 
 	if(NULL!=firedBy && NULL!=target && ownerAirTargetKey==FsExistence::GetSearchKey(target))
 	{
+		if(FSEX_AIRPLANE==target->GetType())
+		{
+			FsAirplaneProperty &targetProp=((FsAirplane *)target)->Prop();
+			if(YSTRUE==targetProp.IsEcmActive())
+			{
+				const double ecmPower=targetProp.GetEcmPower();
+				if(0.85<ecmPower)
+				{
+					return YSFALSE;
+				}
+				else if(0.35<=ecmPower)
+				{
+					const double lockBreakProbability=(ecmPower-0.35)/(0.85-0.35);
+					const double dice=(double)rand()/(double)RAND_MAX;
+					if(dice<lockBreakProbability)
+					{
+						return YSFALSE;
+					}
+				}
+			}
+		}
 		return YSTRUE;
 	}
 	else
