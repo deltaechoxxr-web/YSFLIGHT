@@ -1059,6 +1059,7 @@ void FsAirplaneProperty::Move(
 void FsAirplaneProperty::MoveTimer(const double &dt)
 {
 	staHobbsTime+=dt;
+	this->UpdateEcm(dt);
 }
 
 void FsAirplaneProperty::PressVirtualButton(VIRTUALBUTTON btn)
@@ -10494,12 +10495,26 @@ YSBOOL FsAirplaneProperty::IsEcmActive(void) const
 	return YSFALSE;
 }
 
+YSBOOL FsAirplaneProperty::GetHasEcm(void) const
+{
+	return chHasEcm;
+}
+
 double FsAirplaneProperty::GetEcmPower(void) const
 {
 	if(YSTRUE==IsEcmActive() && 0.0<chEcmMaxEnergy)
 	{
 		const double energyRatio=YsBound(staEcmEnergy/chEcmMaxEnergy,0.0,1.0);
 		return chEcmPower*energyRatio;
+	}
+	return 0.0;
+}
+
+double FsAirplaneProperty::GetEcmEnergyRatio(void) const
+{
+	if(0.0<chEcmMaxEnergy)
+	{
+		return YsBound(staEcmEnergy/chEcmMaxEnergy,0.0,1.0);
 	}
 	return 0.0;
 }

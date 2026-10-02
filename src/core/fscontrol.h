@@ -168,6 +168,8 @@ enum FSBUTTONFUNCTION
 
 	FSBTF_SWITCHVIEWTARGET,              // Switch view target
 
+	FSBTF_TOGGLEECM,                     // Turn on/off ECM (Electronic Countermeasures)
+
 FSBTF_NUMBUTTONFUNCTION
 };
 
