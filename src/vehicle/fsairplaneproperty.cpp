@@ -467,6 +467,14 @@ void FsAirplaneProperty::Initialize(void)
 	chHasGroundRadar=YSTRUE;
 	chHasAirRadar=YSTRUE;
 
+	chHasEcm=YSTRUE;
+	chEcmMaxEnergy=120.0;
+	chEcmDrainRate=8.0;
+	chEcmRechargeRate=12.0;
+	chEcmPower=0.9;
+	staEcmActive=YSFALSE;
+	staEcmEnergy=chEcmMaxEnergy;
+
 
 
 	refSpdCruise=0.0;
@@ -10456,3 +10464,68 @@ const char *FsGetAirplaneCategoryString(FSAIRPLANECATEGORY cat)
 	}
 }
 
+
+YSRESULT FsAirplaneProperty::ToggleEcm(void)
+{
+	if(YSTRUE!=chHasEcm)
+	{
+		return YSERR;
+	}
+
+	if(YSTRUE==staEcmActive)
+	{
+		staEcmActive=YSFALSE;
+		return YSOK;
+	}
+	else if(0.0<staEcmEnergy)
+	{
+		staEcmActive=YSTRUE;
+		return YSOK;
+	}
+	return YSERR;
+}
+
+YSBOOL FsAirplaneProperty::IsEcmActive(void) const
+{
+	if(YSTRUE==chHasEcm && YSTRUE==staEcmActive && 0.0<staEcmEnergy)
+	{
+		return YSTRUE;
+	}
+	return YSFALSE;
+}
+
+double FsAirplaneProperty::GetEcmPower(void) const
+{
+	if(YSTRUE==IsEcmActive() && 0.0<chEcmMaxEnergy)
+	{
+		const double energyRatio=YsBound(staEcmEnergy/chEcmMaxEnergy,0.0,1.0);
+		return chEcmPower*energyRatio;
+	}
+	return 0.0;
+}
+
+void FsAirplaneProperty::UpdateEcm(const double &dt)
+{
+	if(YSTRUE!=chHasEcm)
+	{
+		return;
+	}
+
+	if(YSTRUE==staEcmActive)
+	{
+		staEcmEnergy-=chEcmDrainRate*dt;
+		if(staEcmEnergy<=0.0)
+		{
+			staEcmEnergy=0.0;
+			staEcmActive=YSFALSE;
+		}
+	}
+	else
+	{
+		staEcmEnergy+=chEcmRechargeRate*dt;
+		if(staEcmEnergy>chEcmMaxEnergy)
+		{
+			staEcmEnergy=chEcmMaxEnergy;
+		}
+	}
+}

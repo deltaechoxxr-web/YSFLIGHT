@@ -197,6 +197,9 @@ public:
 	double spoiler;
 	YSBOOL autoPilot;
 
+	int ecmState;
+	double ecmPower;
+
 	double elevator,elevatorTrim,aileron,rudder;
 
 	YsVec3 velocity;  // Relative to the aircraft coordinate

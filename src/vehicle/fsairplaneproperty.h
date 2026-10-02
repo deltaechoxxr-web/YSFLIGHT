@@ -471,6 +471,15 @@ protected:
 	YSBOOL chHasGroundRadar;
 	YSBOOL chHasAirRadar;
 
+	// ECM (Electronic Countermeasures)
+	YSBOOL chHasEcm;
+	double chEcmMaxEnergy;
+	double chEcmDrainRate;
+	double chEcmRechargeRate;
+	double chEcmPower;
+	YSBOOL staEcmActive;
+	double staEcmEnergy;
+
 
 	//Reference Vars
 	double refSpdCruise;     //Cruising Speed
@@ -584,6 +593,11 @@ public:
 	YSRESULT ToggleBeacon(void);
 	YSRESULT ToggleStrobe(void);
 	YSRESULT ToggleLandingLight(void);
+
+	YSRESULT ToggleEcm(void);
+	YSBOOL IsEcmActive(void) const;
+	double GetEcmPower(void) const;
+	void UpdateEcm(const double &dt);
 
 
 	int LoadWeaponToSlot(FSWEAPONTYPE wpnType,int n); // Returns number of weapons actually loaded
