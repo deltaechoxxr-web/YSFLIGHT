@@ -7801,7 +7801,7 @@ void FsSimulation::SimDrawForeground(const ActualViewMode &actualViewMode,const 
 	printf("SimDrawForeground-9-1\n");
 #endif
 
-	if(NULL!=playerPlane && YSTRUE==FsIsMainWindowActive() && NeedToDrawInstrument(actualViewMode)==YSTRUE &&
+	if(NULL!=playerPlane && NULL!=hud && YSTRUE==FsIsMainWindowActive() && NeedToDrawInstrument(actualViewMode)==YSTRUE &&
 	   YSTRUE==playerPlane->Prop().GetHasEcm())
 	{
 		int wid,hei;
@@ -7813,18 +7813,17 @@ void FsSimulation::SimDrawForeground(const ActualViewMode &actualViewMode,const 
 
 		if(0!=cockpitIndicationSet.inst.ecmState)
 		{
-			const double energyRatio=playerPlane->Prop().GetEcmEnergyRatio();
+			const double energyRatio=YsBound(playerPlane->Prop().GetEcmEnergyRatio(),0.0,1.0);
 
-			char bar[12];
-			const int nFilled=(int)(energyRatio*10.0+0.5);
+			YsString bar;
+			const int nFilled=YsBound((int)(energyRatio*10.0+0.5),0,10);
 			for(int i=0; i<10; ++i)
 			{
-				bar[i]=(i<nFilled ? '#' : '.');
+				bar.Append((i<nFilled ? "#" : "."));
 			}
-			bar[10]=0;
 
 			YsString msg;
-			msg.Printf("ECM: ON [%s] %d%%",bar,(int)(energyRatio*100.0+0.5));
+			msg.Printf("ECM: ON [%s] %d%%",bar.Txt(),(int)(energyRatio*100.0+0.5));
 
 			YsColor col;
 			if(energyRatio<=0.0)
