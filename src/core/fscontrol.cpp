@@ -1353,6 +1353,8 @@ static struct FsButtonFunctionString fsButtonFuncStr[]=
 
 	{FSBTF_TOGGLEECM,            "TOGGLEECM",            "Turn On/Off ECM (Electronic Countermeasures)"}
 };
+static_assert(sizeof(fsButtonFuncStr)/sizeof(fsButtonFuncStr[0])==FSBTF_NUMBUTTONFUNCTION,
+	"Button function names must cover every FSBUTTONFUNCTION value");
 
 static struct FsKeyString fsKeyString[]=
 {
