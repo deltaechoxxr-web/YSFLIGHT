@@ -1054,6 +1054,8 @@ void FsAirplaneProperty::Move(
 			staHUDFlickerTimer=(double)rand()/(double)RAND_MAX;
 		}
 	}
+
+	this->UpdateEcm(dt);
 }
 
 void FsAirplaneProperty::MoveTimer(const double &dt)
